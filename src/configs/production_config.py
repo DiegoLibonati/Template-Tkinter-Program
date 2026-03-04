@@ -2,5 +2,7 @@ from src.configs.default_config import DefaultConfig
 
 
 class ProductionConfig(DefaultConfig):
-    DEBUG = False
-    ENV = "production"
+    def __init__(self) -> None:
+        super().__init__()
+        self.DEBUG = False
+        self.ENV = "production"

@@ -1,6 +1,8 @@
 import os
 from tkinter import Tk
 
+from dotenv import load_dotenv
+
 from src.configs.development_config import DevelopmentConfig
 from src.configs.logger_config import setup_logger
 from src.configs.production_config import ProductionConfig
@@ -17,6 +19,8 @@ CONFIG_MAP = {
 
 
 def main(environment: str = "production") -> None:
+    load_dotenv()
+
     environment = os.getenv("ENVIRONMENT", environment)
 
     root = Tk()

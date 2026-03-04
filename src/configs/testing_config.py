@@ -2,6 +2,8 @@ from src.configs.default_config import DefaultConfig
 
 
 class TestingConfig(DefaultConfig):
-    TESTING = True
-    DEBUG = True
-    ENV = "testing"
+    def __init__(self) -> None:
+        super().__init__()
+        self.TESTING = True
+        self.DEBUG = True
+        self.ENV = "testing"
