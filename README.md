@@ -338,19 +338,28 @@ class AuthService:
 ```python
 # default_config.py - Base template
 class DefaultConfig:
-    TZ = os.getenv("TZ", "America/Argentina/Buenos_Aires")
-    DEBUG = False
-    TESTING = False
+    def __init__(self) -> None:
+        # General
+        self.TZ = os.getenv("TZ", "America/Argentina/Buenos_Aires")
+        self.DEBUG = False
+        self.TESTING = False
+
+        # App
+        self.ENV_NAME = os.getenv("ENV_NAME", "template tkinter python")
 
 # development_config.py - Customizes for development
 class DevelopmentConfig(DefaultConfig):
-    DEBUG = True
-    ENV = "development"
+    def __init__(self) -> None:
+        super().__init__()
+        self.DEBUG = True
+        self.ENV = "development"
 
 # production_config.py - Customizes for production
 class ProductionConfig(DefaultConfig):
-    DEBUG = False
-    ENV = "production"
+    def __init__(self) -> None:
+        super().__init__()
+        self.DEBUG = False
+        self.ENV = "production"
 ```
 
 **Benefit**: Common configuration in one place; environments only override what's different.
