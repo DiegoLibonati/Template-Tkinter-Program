@@ -4,7 +4,7 @@ import types
 from src.utils.dialogs import BaseDialog, InternalDialogError
 
 
-def handle_error(
+def error_handler(
     _exc_type: type[BaseException],
     exc_value: BaseException,
     _exc_tb: types.TracebackType,

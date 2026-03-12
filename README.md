@@ -13,8 +13,9 @@ The main goal is to explore and demonstrate best practices, patterns, and techno
 3. Execute in Windows: `venv\Scripts\activate`
 4. Execute in Linux/Mac: `source venv/bin/activate`
 5. Execute: `pip install -r requirements.txt`
-6. Execute: `pip install -r requirements.test.txt`
-7. Use `python app.py` or `python -m src` to execute the program
+6. Execute: `pip install -r requirements.dev.txt`
+7. Execute: `pip install -r requirements.test.txt`
+8. Use `python app.py` or `python -m src` to execute the program
 
 ### Pre-Commit for Development
 
@@ -35,15 +36,18 @@ Personal template for developing a desktop application with a graphical interfac
 ## Libraries used
 
 #### Requirements.txt
-
 ```
 pydantic==2.11.9
 python-dotenv==1.0.1
+```
+
+#### Requirements.dev.txt
+```
 pre-commit==4.3.0
+pip-audit==2.7.3
 ```
 
 #### Requirements.test.txt
-
 ```
 pytest==8.4.2
 pytest-env==1.1.5
@@ -53,7 +57,6 @@ pytest-xdist==3.5.0
 ```
 
 #### Requirements.build.txt
-
 ```
 pyinstaller==6.16.0
 ```
@@ -93,6 +96,15 @@ Alternatively, you can run the helper script: `build.bat`
 4. Create the executable: `pyinstaller app.spec`
 
 Alternatively, you can run the helper script: `./build.sh`
+
+## Security Audit
+
+You can check your dependencies for known vulnerabilities using **pip-audit**.
+
+1. Go to the repository folder
+2. Activate your virtual environment
+3. Execute: `pip install -r requirements.dev.txt`
+4. Execute: `pip-audit -r requirements.txt`
 
 ## Env Keys
 
@@ -179,6 +191,7 @@ Template-Tkinter-Program/
 ├── app.py
 ├── pyproject.toml
 ├── requirements.txt
+├── requirements.dev.txt
 ├── requirements.test.txt
 ├── requirements.build.txt
 ├── app.spec
@@ -211,9 +224,10 @@ Template-Tkinter-Program/
 16. `app.py` -> The **application entry point**. Creates the Tkinter root window and initializes the application.
 17. `pyproject.toml` -> **Unified project configuration** for pytest, ruff, and project metadata.
 18. `requirements.txt` -> Lists **production dependencies**.
-19. `requirements.test.txt` -> Lists **testing dependencies** (pytest, pytest-env, etc.).
-20. `requirements.build.txt` -> Lists **build dependencies** (PyInstaller).
-21. `app.spec` -> **PyInstaller configuration** for generating standalone executables.
+19. `requirements.dev.txt` -> Lists **development dependencies** (pre-commit, pip-audit).
+20. `requirements.test.txt` -> Lists **testing dependencies** (pytest, pytest-env, etc.).
+21. `requirements.build.txt` -> Lists **build dependencies** (PyInstaller).
+22. `app.spec` -> **PyInstaller configuration** for generating standalone executables.
 
 ## Architecture & Design Patterns
 

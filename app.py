@@ -8,7 +8,7 @@ from src.configs.logger_config import setup_logger
 from src.configs.production_config import ProductionConfig
 from src.configs.testing_config import TestingConfig
 from src.ui.interface_app import InterfaceApp
-from src.utils.error_handler import handle_error
+from src.utils.error_handler import error_handler
 
 logger = setup_logger("tkinter-app - app.py")
 
@@ -25,7 +25,7 @@ def main(environment: str = "production") -> None:
     environment = os.getenv("ENVIRONMENT", environment)
 
     root = Tk()
-    root.report_callback_exception = handle_error
+    root.report_callback_exception = error_handler
 
     config_class = CONFIG_MAP.get(environment, ProductionConfig)
     config = config_class()

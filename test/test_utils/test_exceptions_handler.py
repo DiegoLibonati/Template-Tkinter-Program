@@ -3,7 +3,7 @@ from pydantic import BaseModel, ValidationError
 
 from src.constants.messages import MESSAGE_ERROR_PYDANTIC
 from src.utils.dialogs import NotFoundDialogError, ValidationDialogError
-from src.utils.exceptions_handler import handle_exceptions
+from src.utils.exceptions_handler import exceptions_handler
 
 
 def make_validation_error() -> ValidationError:
@@ -18,7 +18,7 @@ def make_validation_error() -> ValidationError:
 
 class TestHandleExceptions:
     def test_returns_result_when_no_exception(self) -> None:
-        @handle_exceptions
+        @exceptions_handler
         def fn() -> str:
             return "ok"
 
@@ -27,7 +27,7 @@ class TestHandleExceptions:
     def test_raises_validation_dialog_error_on_pydantic_validation_error(self) -> None:
         validation_error: ValidationError = make_validation_error()
 
-        @handle_exceptions
+        @exceptions_handler
         def fn() -> None:
             raise validation_error
 
@@ -37,7 +37,7 @@ class TestHandleExceptions:
         assert exc_info.value.message == MESSAGE_ERROR_PYDANTIC
 
     def test_does_not_suppress_other_exceptions(self) -> None:
-        @handle_exceptions
+        @exceptions_handler
         def fn() -> None:
             raise ValueError("something else")
 
@@ -45,28 +45,28 @@ class TestHandleExceptions:
             fn()
 
     def test_preserves_function_name(self) -> None:
-        @handle_exceptions
+        @exceptions_handler
         def my_function() -> None:
             pass
 
         assert my_function.__name__ == "my_function"
 
     def test_passes_args_to_wrapped_function(self) -> None:
-        @handle_exceptions
+        @exceptions_handler
         def fn(a: int, b: int) -> int:
             return a + b
 
         assert fn(2, 3) == 5
 
     def test_passes_kwargs_to_wrapped_function(self) -> None:
-        @handle_exceptions
+        @exceptions_handler
         def fn(a: int, b: int = 0) -> int:
             return a + b
 
         assert fn(a=2, b=3) == 5
 
     def test_does_not_suppress_base_dialog_exceptions(self) -> None:
-        @handle_exceptions
+        @exceptions_handler
         def fn() -> None:
             raise NotFoundDialogError(message="not found")
 
@@ -74,7 +74,7 @@ class TestHandleExceptions:
             fn()
 
     def test_returns_none_when_function_returns_none(self) -> None:
-        @handle_exceptions
+        @exceptions_handler
         def fn() -> None:
             return None
 
