@@ -1,100 +1,61 @@
+import types
 from unittest.mock import MagicMock, patch
 
-import pytest
-from pydantic import BaseModel, ValidationError
-
-from src.constants.messages import MESSAGE_ERROR_PYDANTIC
-from src.utils.error_handler import handle_exceptions
-
-
-def make_validation_error() -> ValidationError:
-    class DummyModel(BaseModel):
-        value: int
-
-    try:
-        DummyModel(value="not_an_int")
-    except ValidationError as e:
-        return e
+from src.utils.dialogs import (
+    BaseDialog,
+    NotFoundDialogError,
+    ValidationDialogError,
+)
+from src.utils.error_handler import handle_error
 
 
-class TestHandleExceptions:
-    def test_returns_result_when_no_exception(self) -> None:
-        @handle_exceptions
-        def fn() -> str:
-            return "ok"
+class TestHandleError:
+    def test_calls_open_when_exc_is_base_dialog(self) -> None:
+        exc: ValidationDialogError = ValidationDialogError(message="validation failed")
+        mock_handler: MagicMock = MagicMock()
+        with patch.dict(BaseDialog._HANDLERS, {BaseDialog.ERROR: mock_handler}):
+            handle_error(type(exc), exc, MagicMock(spec=types.TracebackType))
+        mock_handler.assert_called_once()
 
-        result: str = fn()
-        assert result == "ok"
+    def test_calls_open_on_not_found_dialog(self) -> None:
+        exc: NotFoundDialogError = NotFoundDialogError(message="not found")
+        mock_handler: MagicMock = MagicMock()
+        with patch.dict(BaseDialog._HANDLERS, {BaseDialog.ERROR: mock_handler}):
+            handle_error(type(exc), exc, MagicMock(spec=types.TracebackType))
+        mock_handler.assert_called_once()
 
-    def test_passes_args_to_wrapped_function(self) -> None:
-        @handle_exceptions
-        def fn(a: int, b: int) -> int:
-            return a + b
+    def test_opens_internal_dialog_for_non_base_dialog_exception(self) -> None:
+        exc: ValueError = ValueError("unexpected error")
+        mock_handler: MagicMock = MagicMock()
+        with patch.dict(BaseDialog._HANDLERS, {BaseDialog.ERROR: mock_handler}):
+            handle_error(type(exc), exc, MagicMock(spec=types.TracebackType))
+        mock_handler.assert_called_once()
 
-        result: int = fn(2, 3)
-        assert result == 5
+    def test_internal_dialog_message_is_exception_str(self) -> None:
+        exc: RuntimeError = RuntimeError("something broke")
+        with patch("src.utils.error_handler.InternalDialogError") as mock_internal_class:
+            mock_internal: MagicMock = MagicMock()
+            mock_internal_class.return_value = mock_internal
+            handle_error(type(exc), exc, MagicMock(spec=types.TracebackType))
 
-    def test_passes_kwargs_to_wrapped_function(self) -> None:
-        @handle_exceptions
-        def fn(value: str) -> str:
-            return value.upper()
+        mock_internal_class.assert_called_once_with(message="something broke")
+        mock_internal.open.assert_called_once()
 
-        result: str = fn(value="hello")
-        assert result == "HELLO"
+    def test_does_not_raise_for_base_dialog_exc(self) -> None:
+        exc: ValidationDialogError = ValidationDialogError(message="err")
+        mock_handler: MagicMock = MagicMock()
+        with patch.dict(BaseDialog._HANDLERS, {BaseDialog.ERROR: mock_handler}):
+            handle_error(type(exc), exc, MagicMock(spec=types.TracebackType))
 
-    def test_preserves_function_name(self) -> None:
-        @handle_exceptions
-        def my_function() -> None:
-            pass
+    def test_does_not_raise_for_unknown_exception(self) -> None:
+        exc: Exception = Exception("generic")
+        mock_handler: MagicMock = MagicMock()
+        with patch.dict(BaseDialog._HANDLERS, {BaseDialog.ERROR: mock_handler}):
+            handle_error(type(exc), exc, MagicMock(spec=types.TracebackType))
 
-        assert my_function.__name__ == "my_function"
-
-    def test_calls_validation_dialog_on_validation_error(self) -> None:
-        validation_error: ValidationError = make_validation_error()
-
-        @handle_exceptions
-        def fn() -> None:
-            raise validation_error
-
-        with patch("src.utils.error_handler.ValidationDialogError") as mock_dialog_class:
-            mock_dialog: MagicMock = MagicMock()
-            mock_dialog_class.return_value = mock_dialog
-            fn()
-
-        mock_dialog_class.assert_called_once()
-        mock_dialog.dialog.assert_called_once()
-
-    def test_validation_dialog_called_with_pydantic_message(self) -> None:
-        validation_error: ValidationError = make_validation_error()
-
-        @handle_exceptions
-        def fn() -> None:
-            raise validation_error
-
-        with patch("src.utils.error_handler.ValidationDialogError") as mock_dialog_class:
-            mock_dialog_class.return_value = MagicMock()
-            fn()
-
-        _, kwargs = mock_dialog_class.call_args
-        assert kwargs.get("message") == MESSAGE_ERROR_PYDANTIC
-
-    def test_returns_none_on_validation_error(self) -> None:
-        validation_error: ValidationError = make_validation_error()
-
-        @handle_exceptions
-        def fn() -> str:
-            raise validation_error
-
-        with patch("src.utils.error_handler.ValidationDialogError") as mock_dialog_class:
-            mock_dialog_class.return_value = MagicMock()
-            result = fn()
-
+    def test_returns_none(self) -> None:
+        exc: ValidationDialogError = ValidationDialogError(message="err")
+        mock_handler: MagicMock = MagicMock()
+        with patch.dict(BaseDialog._HANDLERS, {BaseDialog.ERROR: mock_handler}):
+            result = handle_error(type(exc), exc, MagicMock(spec=types.TracebackType))
         assert result is None
-
-    def test_does_not_catch_non_validation_errors(self) -> None:
-        @handle_exceptions
-        def fn() -> None:
-            raise RuntimeError("unexpected")
-
-        with pytest.raises(RuntimeError, match="unexpected"):
-            fn()

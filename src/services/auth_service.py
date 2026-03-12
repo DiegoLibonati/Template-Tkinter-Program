@@ -18,42 +18,35 @@ logger = setup_logger("tkinter-app - auth_service.py")
 
 class AuthService:
     @staticmethod
-    def login(username: str, password: str) -> UserModel | None:
+    def login(username: str, password: str) -> UserModel:
         if not username or not password or username.isspace() or password.isspace():
-            ValidationDialogError(message=MESSAGE_NOT_VALID_FIELDS).dialog()
-            return None
+            raise ValidationDialogError(message=MESSAGE_NOT_VALID_FIELDS)
 
         user = UserDAO().get_by_username(username)
 
         if not user:
-            NotFoundDialogError(message=MESSAGE_NOT_EXISTS_USER).dialog()
-            return None
+            raise NotFoundDialogError(message=MESSAGE_NOT_EXISTS_USER)
 
         if not HashService.verify(password, user.password):
-            ValidationDialogError(message=MESSAGE_NOT_VALID_PASSWORD).dialog()
-            return None
+            raise ValidationDialogError(message=MESSAGE_NOT_VALID_PASSWORD)
 
-        SuccessDialogInformation(message=MESSAGE_SUCCESS_LOGIN).dialog()
+        SuccessDialogInformation(message=MESSAGE_SUCCESS_LOGIN).open()
         return user
 
     @staticmethod
     def register(username: str, password: str, confirm_password: str) -> bool:
         if not username or not password or not confirm_password or username.isspace() or password.isspace():
-            ValidationDialogError(message=MESSAGE_NOT_VALID_FIELDS).dialog()
-            return False
+            raise ValidationDialogError(message=MESSAGE_NOT_VALID_FIELDS)
 
         if password != confirm_password:
-            ValidationDialogError(message=MESSAGE_NOT_VALID_MATCH_PASSWORD).dialog()
-            return False
+            raise ValidationDialogError(message=MESSAGE_NOT_VALID_MATCH_PASSWORD)
 
         if UserDAO().exists(username):
-            ConflictDialogError(message=MESSAGE_ALREADY_EXISTS_USERNAME).dialog()
-            return False
+            raise ConflictDialogError(message=MESSAGE_ALREADY_EXISTS_USERNAME)
 
         user = UserModel(username=username, password=HashService.hash(password))
 
         UserDAO().save(user)
-        logger.info(user)
 
-        SuccessDialogInformation(message=MESSAGE_SUCCESS_REGISTER).dialog()
+        SuccessDialogInformation(message=MESSAGE_SUCCESS_REGISTER).open()
         return True

@@ -4,7 +4,7 @@ from typing import Any
 from src.constants.messages import MESSAGE_ERROR_APP, MESSAGE_NOT_FOUND_DIALOG_TYPE
 
 
-class BaseDialog:
+class BaseDialog(Exception):  # noqa: N818
     ERROR = "Error"
     WARNING = "Warning"
     INFO = "Info"
@@ -27,6 +27,7 @@ class BaseDialog:
     def __init__(self, message: str | None = None):
         if message is not None:
             self.message = message
+        super().__init__(self.message)
 
     @property
     def title(self) -> str:
@@ -39,7 +40,7 @@ class BaseDialog:
             "message": self.message,
         }
 
-    def dialog(self):
+    def open(self) -> None:
         handler = self._HANDLERS.get(self.dialog_type)
         if handler is None:
             messagebox.showerror(self.ERROR, MESSAGE_NOT_FOUND_DIALOG_TYPE)

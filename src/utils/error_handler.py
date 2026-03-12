@@ -1,29 +1,18 @@
-from collections.abc import Callable
-from functools import wraps
-from typing import TypeVar
+# import traceback
+import types
 
-from pydantic import ValidationError
-from typing_extensions import ParamSpec
-
-from src.configs.logger_config import setup_logger
-from src.constants.messages import MESSAGE_ERROR_PYDANTIC
-from src.utils.dialogs import ValidationDialogError
-
-logger = setup_logger(__name__)
-
-P = ParamSpec("P")
-R = TypeVar("R")
+from src.utils.dialogs import BaseDialog, InternalDialogError
 
 
-def handle_exceptions(fn: Callable[P, R]) -> Callable[P, R]:
-    @wraps(fn)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        try:
-            return fn(*args, **kwargs)
+def handle_error(
+    _exc_type: type[BaseException],
+    exc_value: BaseException,
+    _exc_tb: types.TracebackType,
+) -> None:
+    # error_detail: str = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+    # logger.error("Unhandled exception:\n%s", error_detail)
 
-        except ValidationError as _e:
-            # logger.error("Validation error: %s", e)
-            ValidationDialogError(message=MESSAGE_ERROR_PYDANTIC).dialog()
-            return
-
-    return wrapper
+    if isinstance(exc_value, BaseDialog):
+        exc_value.open()
+    else:
+        InternalDialogError(message=str(exc_value)).open()

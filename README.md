@@ -144,6 +144,7 @@ Template-Tkinter-Program/
 │   ├── utils/
 │   │   ├── dialogs.py
 │   │   ├── error_handler.py
+│   │   ├── exceptions_handler.py
 │   │   └── __init__.py
 │   ├── assets/
 │   │   └── images/
@@ -319,7 +320,7 @@ class UserDAO:
 ```python
 class AuthService:
     @staticmethod
-    def login(username: str, password: str) -> UserModel | None:
+    def login(username: str, password: str) -> UserModel:
         # Business rules: validate fields, check user exists, verify password
         ...
 

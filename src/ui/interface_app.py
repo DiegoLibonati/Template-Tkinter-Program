@@ -7,7 +7,7 @@ from src.ui.styles import Styles
 from src.ui.views.login_view import LoginView
 from src.ui.views.main_view import MainView
 from src.ui.views.register_view import RegisterView
-from src.utils.error_handler import handle_exceptions
+from src.utils.exceptions_handler import handle_exceptions
 
 
 class InterfaceApp:
@@ -38,12 +38,10 @@ class InterfaceApp:
     def _login(self) -> None:
         username = self._login_view.text_username.get()
         password = self._login_view.text_password.get()
+
         user = AuthService.login(username=username, password=password)
-
-        if not user:
-            return
-
         self.user = user
+
         MainView(root=self._root, styles=self._styles, username=self.username)
 
     @handle_exceptions
