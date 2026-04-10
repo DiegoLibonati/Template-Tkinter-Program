@@ -1,5 +1,5 @@
 [project]
-name = "template-tkinter-program"
+name = "tkinter-boilerplate"
 version = "1.0.0"
 description = "Template for developing Tkinter applications with Python"
 requires-python = ">=3.11"

@@ -367,7 +367,7 @@ class DefaultConfig:
         self.TESTING = False
 
         # App
-        self.ENV_NAME = os.getenv("ENV_NAME", "template tkinter python")
+        self.ENV_NAME = os.getenv("ENV_NAME", "tkinter boilerplate")
 
 # development_config.py - Customizes for development
 class DevelopmentConfig(DefaultConfig):
