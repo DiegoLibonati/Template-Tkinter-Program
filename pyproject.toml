@@ -6,7 +6,7 @@ requires-python = ">=3.11"
 
 [tool.pytest.ini_options]
 pythonpath = "."
-testpaths = ["test"]
+testpaths = ["tests"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"

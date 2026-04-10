@@ -163,7 +163,7 @@ Template-Tkinter-Program/
 │   │   └── images/
 │   ├── __init__.py
 │   └── __main__.py
-├── test/
+├── tests/
 │   ├── test_configs/
 │   │   ├── __init__.py
 │   │   ├── test_development_config.py
@@ -220,8 +220,8 @@ Template-Tkinter-Program/
 11. `ui/interface_app.py` -> The **main application orchestrator**. Manages navigation between views and coordinates user actions with services.
 12. `utils` -> Contains **shared utilities** for general-purpose helper functions used across multiple modules.
 13. `assets` -> Static files such as **images and icons** used by the application.
-14. `test` -> Contains **tests** organized to mirror the `src/` structure.
-15. `conftest.py` -> Defines **pytest fixtures** for application setup and test data.
+14. `tests` -> Contains **tests** organized to mirror the `src/` structure.
+15. `conftest.py` -> Defines **pytest fixtures** for application setup and tests data.
 16. `app.py` -> The **application entry point**. Creates the Tkinter root window and initializes the application.
 17. `pyproject.toml` -> **Unified project configuration** for pytest, ruff, and project metadata.
 18. `requirements.txt` -> Lists **production dependencies**.
