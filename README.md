@@ -26,7 +26,7 @@ NOTE: Install **pre-commit** inside the repository folder.
 
 ## Description
 
-Personal template for developing a desktop application with a graphical interface using Tkinter and Python.
+This is a personal boilerplate for building desktop applications with a graphical interface using Python and Tkinter.
 
 ## Technologies used
 
