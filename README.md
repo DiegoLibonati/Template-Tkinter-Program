@@ -115,6 +115,20 @@ Alternatively, you can run the helper script: `build.bat`
 
 Alternatively, you can run the helper script: `./build.sh`
 
+## Production
+
+Before building and distributing the application, make sure to prepare the environment for production:
+
+1. Set `ENVIRONMENT=production` in your `.env` file — this disables debug mode and switches to the production logger configuration
+2. Set all required env keys with real production values (see [Env Keys](#env-keys))
+3. Run the security audit to check for known vulnerabilities in your dependencies: `pip-audit -r requirements.txt`
+4. Run the test suite to verify everything works: `pytest --log-cli-level=INFO`
+5. Generate the standalone executable following the [Build](#build) steps
+
+The output executable in `dist/` bundles the entire application including the `.env` file and assets — it runs on any machine without requiring Python to be installed.
+
+> **Note:** The `.env` file is embedded in the executable by `app.spec`. Make sure it contains production values before building.
+
 ## Security Audit
 
 You can check your dependencies for known vulnerabilities using **pip-audit**.
